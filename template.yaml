@@ -15,7 +15,7 @@ Resources:
       FunctionName: ResumeFunction
       CodeUri: Lambda
       Handler: app.lambda_handler
-      Description: Backend for site view counter - TESTING
+      Description: Backend for site view counter
       Timeout: 3      
       Policies:
         - DynamoDBCrudPolicy:
