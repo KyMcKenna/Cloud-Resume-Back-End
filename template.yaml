@@ -1,0 +1,55 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: Backend for site view counter
+
+Globals:
+  Function:
+    Runtime: python3.7
+    MemorySize: 128
+     
+Resources:
+  ResumeFunction:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      
+      FunctionName: ResumeFunction
+      CodeUri: Lambda
+      Handler: app.lambda_handler
+      Description: Backend for site view counter - TESTING
+      Timeout: 3      
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref MyTable
+      Events:
+        ResumeViews:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ResumeViewCountApi
+            Path: /count
+            Method: get
+      Environment:
+        Variables: 
+          databaseName : !Ref MyTable        
+            
+  ResumeViewCountApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Cors:
+        AllowOrigin: "'*'"
+      EndpointConfiguration: Regional
+      OpenApiVersion: 3.0.1
+      StageName: Prod
+      
+  MyTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions: 
+        - AttributeName: id
+          AttributeType: S       
+      KeySchema: 
+        - AttributeName: id
+          KeyType: HASH
+      TableName: VisitorCounter
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
